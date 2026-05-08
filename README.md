@@ -14,7 +14,7 @@ wanted to understand why mine was different. They're a side effect, not the goal
 
 ---
 
-## Real Work — Not Just Benchmarks
+## Real Work - Not Just Benchmarks
 
 ### Solving a puzzle the community said no local LLM could crack
 
@@ -100,6 +100,8 @@ Measured with exact `completion_tokens` from vLLM. Happy to be proved wrong — 
 ---
 
 ## Quick Start
+
+> ⚠️ Warning: The setup scripts disable system swap to prevent unified memory thrashing. This is a system-level change
 
 ```bash
 # 1. Prerequisites

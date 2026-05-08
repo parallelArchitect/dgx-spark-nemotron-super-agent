@@ -1,0 +1,28 @@
+# --- Model & Parser Files ---
+# Downloaded reasoning parser
+super_v3_reasoning_parser.py
+
+# Local model cache (referenced in start.sh)
+nim-cache/
+ngc/
+
+# --- Environment & Secrets ---
+# Protects NGC_API_KEY and other sensitive variables
+.env
+.env.local
+
+# --- Python & uv ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.uv/
+
+# --- OS & IDE ---
+.DS_Store
+.vscode/
+.idea/
+
+# --- Benchmarking ---
+# Ignore local benchmark logs or reports if generated
+benchmark/*.log
