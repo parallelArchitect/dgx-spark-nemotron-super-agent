@@ -1,6 +1,6 @@
 # METHODOLOGY.md
 ## DGX Spark · Nemotron-3-Super-120B · Single-Node Benchmark
-**Author:** Raj Rawat (`airawatraj`) · **Date:** May 8, 2026
+**Author:** Rajendra Rawat (`airawatraj`) · **Date:** May 8, 2026
 
 ---
 

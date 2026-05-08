@@ -23,25 +23,33 @@ only o3 could do it at the time of posting.
 
 Cogni-Brain solved it locally in under 5 minutes via Open WebUI.
 
-![Cogni-Brain solving the Albert-Bernard-Cheryl logic puzzle in Open WebUI — answered correctly after 5 minutes of reasoning](./assets/openwebui_logic_puzzle.png)
+<p align="center">
+  <img src="./assets/openwebui_logic_puzzle.png" width="800" alt="Cogni-Brain logic puzzle solution">
+</p>
 
 The same prompt on NVIDIA's own cloud-hosted endpoint returned an internal server error:
 
-![NVIDIA build.nvidia.com cloud endpoint returning internal server error on the same Nemotron-3-Super puzzle prompt](./assets/cloud_inference_fails.png)
+<p align="center">
+  <img src="./assets/cloud_inference_fails.png" width="850">
+</p>
 
 ### 90 minutes of autonomous agentic work
 
 Cogni-Brain built a complete HTML5 chess app via NemoHermes — pawn promotion,
 en passant, castling — running 60 tool-call iterations completely autonomously. The agent successfully navigated proxy timeouts and managed a massive 130K context window without crashing the KV cache. Progress updates were delivered to Telegram throughout.
 
-![NemoHermes Cogni agent — 90 minute autonomous chess app build session, 60 iterations, implementing pawn promotion and en passant via Telegram](./assets/nemohermes_telegram_chess_build.png)
+<p align="center">
+  <img src="./assets/nemohermes_telegram_chess_build.png" width="350" alt="NemoHermes Telegram Progress Updates">
+</p>
 
 ### Coding agent in VS Code
 
 Cogni-Brain running as a coding agent inside VS Code via Continue extension,
 analyzing the vLLM codebase — on the same Spark it is running on.
 
-![Cogni-Brain as a VS Code coding agent analyzing the vLLM block manager on SSH-connected DGX Spark](./assets/vscode_cogni_brain_agent.png)
+<p align="center">
+  <img src="./assets/vscode_cogni_brain_agent.png" width="900">
+</p>
 
 ### NemoHermes TUI
 
@@ -178,4 +186,4 @@ If you reproduce these results, find errors in the methodology, or achieve highe
 numbers — please open an issue or PR. The goal is accurate community benchmarks,
 not records.
 
-**Author:** Raj Rawat · May 2026
+**Author:** Rajendra Rawat · May 2026
