@@ -111,9 +111,9 @@ All results use exact `completion_tokens` from vLLM's streaming usage API to cal
 | Run | TTFT | TPS | Output tokens |
 |---|---|---|---|
 | 1 | 211ms | 23.5 | 300 |
-| 2 | 218ms | 23.6 | 300 |
+| 2 | 213ms | 23.6 | 300 |
 | 3 | 212ms | 22.6 | 300 |
-| **Average** | **214ms** | **23.2** | |
+| **Average** | **212ms** | **23.2** | |
 
 ### Concurrent Sessions
 
