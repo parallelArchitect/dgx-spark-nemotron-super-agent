@@ -100,8 +100,10 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
-| **Cogni-Brain (airawatraj)** | **23.2** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
+| **Cogni-Brain (airawatraj)** | **23.2** | NVFP4 + vLLM | 131K | 1 | NemoHermes + Open WebUI |
+| **Cogni-Brain (airawatraj)** | **55.3** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
 | Seth Hobson (spark-arena, tg128) | 21.66 | NVFP4 + vLLM | 131K | 1 | none |
+| Seth Hobson (spark-arena, tg128) | 53.55 | NVFP4 + vLLM | 131K | 5 | none |
 | Saiyam Pathak | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
 | Avarok | 19 | NVFP4 + vLLM | unknown | 1 | none |
 | Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none |
