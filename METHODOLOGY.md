@@ -148,10 +148,18 @@ TPS remains stable at 23+ tokens/s across the full 131K context window. No perfo
 
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
-| **This work** | **23.2** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
-| Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none documented |
-| josephbreda | 16–17 | NVFP4 + vLLM | unknown | 1 | none |
-| Avarok | 19 | NVFP4 + vLLM | unknown | 1 | none |
+| **Cogni-Brain (airawatraj)** | **23.2** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
+| Seth Hobson (spark-arena, tg128) | 21.66 | NVFP4 + vLLM | 131K | 1 | none |
 | Saiyam Pathak | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
+| Avarok | 19 | NVFP4 + vLLM | unknown | 1 | none |
+| Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none |
+| josephbreda | 16–17 | NVFP4 + vLLM | unknown | 1 | none |
 
-*If you reproduce these results or find errors in this methodology, please open an issue or pull request. The goal is accurate, reproducible community benchmarks — not records.*
+> **Note:** spark-arena tg128 results use 128 fixed output tokens with no
+> production services. This benchmark used 300 output tokens with NemoHermes
+> and Open WebUI running alongside. See [README.md](README.md) for full
+> community comparison including concurrent session results.
+
+*If you reproduce these results or find errors in this methodology, please
+open an issue or pull request. The goal is accurate, reproducible community
+benchmarks — not records.*
