@@ -7,7 +7,7 @@ I bought a DGX Spark to do real work: running serious local AI agents and traini
 This repo documents what it took to get Nemotron-3-Super-120B actually working
 for real agentic tasks: building apps autonomously, solving puzzles, writing code.
 
-The benchmarks are here because the community was reporting 15–16 TPS and I
+The benchmarks are here because community results ranged from 16–19.5 TPS and I
 wanted to understand why mine was different. They're a side effect, not the goal.
 
 > ⚠️ **Personal workstation setup. Not for enterprise use. Use at your own risk.**
@@ -61,6 +61,10 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 
 ## Benchmark Results
 
+> NemoHermes agent and Open WebUI were **running alongside** during all benchmark runs.
+> TPS includes both reasoning (`<think>`) and answer tokens.
+
+
 | Metric | Result |
 |---|---|
 | Single session TPS (average) | **23.2 tok/s** |
@@ -74,9 +78,6 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 | GPU memory utilization | 0.75 |
 | Swap during benchmark | 0 bytes |
 
-> NemoHermes agent and Open WebUI were **running alongside** during all benchmark runs.
-> TPS includes both reasoning (`<think>`) and answer tokens. See [METHODOLOGY.md](METHODOLOGY.md) for full measurement details.
-
 <p align="center">
   <img src="./assets/benchmark_test_1-3.png" width="600" alt="Benchmark Test 1-3">
 </p>
@@ -89,6 +90,9 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 
 ## Compared to Prior Published Results
 
+> NemoHermes agent and Open WebUI were **running alongside** during all benchmark runs.
+> TPS includes both reasoning (`<think>`) and answer tokens.
+
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
 | **This work** | **23.2** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
@@ -97,7 +101,7 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 | Avarok | 19 | NVFP4 + vLLM | unknown | 1 | none |
 | Saiyam Pathak | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
 
-**AFAIK best documented single-Spark vLLM result for Nemotron 3 Super as of May 2026.**
+**AFAIK best documented single-Spark result for Nemotron 3 Super as of May 2026 — across both vLLM and llama.cpp stacks.**
 Measured with exact `completion_tokens` from vLLM. Happy to be proved wrong — let's extract max juice out of Spark.
 
 ---
