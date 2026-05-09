@@ -155,6 +155,11 @@ Without this, sustained agentic sessions will fail mid-task.
 
 ## Known Limitations
 
+**Telegram notifications:** Progress updates via Telegram 
+are not end-to-end encrypted. For sensitive enterprise 
+deployments replace Telegram with a self-hosted notification 
+channel or local webhook.
+
 **Network friction inside the sandbox:** Heavy file write operations inside the K3s
 cluster can trigger `Unexpected Error: tailscale: dial timeout`. The 600-second
 gateway timeout resolves most cases. Breaking large tasks into smaller subtasks
