@@ -1,6 +1,6 @@
 # Running a Real Local AI Agent on DGX Spark · Nemotron-3-Super-120B
 
-I bought a DGX Spark to do real work: running serious local AI agents and training foundation models from scratch — not to run benchmarks.
+I bought a DGX Spark to do real work: running serious local AI agents and training foundation models from scratch - not to run benchmarks.
 
 *(If you are curious about the training side of this hardware, check out [SageGPT](https://github.com/airawatraj/sage-gpt), my 7.5M parameter Sanskrit SLM trained entirely from scratch on this same machine).*
 
@@ -14,11 +14,11 @@ wanted to understand why mine was different. They're a side effect, not the goal
 
 ---
 
-## Real Work — Not Just Benchmarks
+## Real Work - Not Just Benchmarks
 
 ### Solving a puzzle the community said no local LLM could crack
 
-I came across a reddit thread that claimed ["There's not a SINGLE local LLM which can solve this logic puzzle"](https://www.reddit.com/r/LocalLLaMA/comments/1mblq5g/theres_not_a_single_local_llm_which_can_solve/) —
+I came across a reddit thread that claimed ["There's not a SINGLE local LLM which can solve this logic puzzle"](https://www.reddit.com/r/LocalLLaMA/comments/1mblq5g/theres_not_a_single_local_llm_which_can_solve/) -
 only o3 could do it at the time of posting.
 
 Cogni-Brain solved it locally in under 5 minutes via Open WebUI.
@@ -28,7 +28,7 @@ Cogni-Brain solved it locally in under 5 minutes via Open WebUI.
   <br><i>Cogni-Brain reasoning through the Albert-Bernard-Cheryl puzzle</i>
 </p>
 
-The same prompt on NVIDIA's own cloud-hosted endpoint returned an internal server error:
+The same prompt on [NVIDIA's own cloud-hosted endpoint](https://build.nvidia.com/nvidia/nemotron-3-super-120b-a12b) returned an internal server error:
 
 <p align="center">
   <img src="./assets/cloud_inference_fails.png" width="600">
@@ -36,8 +36,8 @@ The same prompt on NVIDIA's own cloud-hosted endpoint returned an internal serve
 
 ### 90 minutes of autonomous agentic work
 
-Cogni-Brain built a complete HTML5 chess app via NemoHermes — pawn promotion,
-en passant, castling — running 60 tool-call iterations completely autonomously. The agent successfully navigated proxy timeouts and managed a massive 130K context window without crashing the KV cache. Progress updates were delivered to Telegram throughout.
+Cogni-Brain built a complete HTML5 chess app via NemoHermes - pawn promotion,
+en passant, castling - running 60 tool-call iterations completely autonomously. The agent successfully navigated proxy timeouts and managed a massive 130K context window without crashing the KV cache. Progress updates were delivered to Telegram throughout.
 
 <p align="center">
   <img src="./assets/nemohermes_telegram_chess_build.png" width="260" alt="Telegram Progress">
@@ -47,7 +47,7 @@ en passant, castling — running 60 tool-call iterations completely autonomously
 ### Coding agent in VS Code
 
 Cogni-Brain running as a coding agent inside VS Code via Continue extension,
-analyzing the vLLM codebase — on the same Spark it is running on.
+analyzing the vLLM codebase - on the same Spark it is running on.
 
 <p align="center">
   <img src="./assets/vscode_cogni_brain_agent.png" width="600" alt="VS Code Agent">
@@ -97,6 +97,10 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 > **Methodology note:** The [spark-arena leaderboard](https://spark-arena.com/leaderboard) uses a standardised `tg128` test
 > (128 fixed output tokens, no production services). This benchmark used 300 output tokens
 > with NemoHermes and Open WebUI running alongside. Methodologies are not directly comparable.
+>
+> **Model note:** This benchmark is specific to **Nemotron-3-Super-120B-A12B-NVFP4** - a reasoning-optimised MoE model.
+> Other 120B models (e.g. gpt-oss-120b) use different architectures optimised for throughput rather than deep reasoning
+> and are not directly comparable for agentic workloads.
 
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
@@ -109,15 +113,16 @@ analyzing the vLLM codebase — on the same Spark it is running on.
 | Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none |
 | josephbreda | 16–17 | NVFP4 + vLLM | unknown | 1 | none |
 
-The highest single-node single-session result in the [spark-arena community leaderboard](https://spark-arena.com/leaderboard)
-as of May 9, 2026 is 21.66 TPS (tg128, vLLM, NVFP4, Single Node, no production services).
-This setup measured 23.2 TPS with NemoHermes and Open WebUI running alongside —
+The highest single-node single-session result for Nemotron-3-Super-120B in the
+[spark-arena community leaderboard](https://spark-arena.com/leaderboard) as of May 9, 2026
+is 21.66 TPS (tg128, vLLM, NVFP4, Single Node, no production services).
+This setup measured 23.2 TPS with NemoHermes and Open WebUI running alongside -
 isolated TPS would be higher. Measured with exact `completion_tokens` from vLLM's
-streaming usage API. Happy to be proved wrong — let's extract max juice out of Spark.
+streaming usage API. Happy to be proved wrong - let's extract max juice out of Spark.
 
 <p align="center">
-  <img src="./assets/spark_arena_leaderboard.png" width="800" alt="spark-arena community leaderboard — Single Node NVFP4 vLLM results as of May 9 2026">
-  <br><i>spark-arena community leaderboard — Single Node, NVFP4, vLLM, concurrency 1 — May 9, 2026</i>
+  <img src="./assets/spark_arena_leaderboard.png" width="800" alt="spark-arena community leaderboard - Single Node NVFP4 vLLM results as of May 9 2026">
+  <br><i>spark-arena community leaderboard - Single Node, NVFP4, vLLM, concurrency 1 - May 9, 2026</i>
 </p>
 
 ---
@@ -198,7 +203,7 @@ dgx-spark-nemotron-super-agent/
 
 ## Known Limitations
 
-- Nightly vLLM image — not a stable release
+- Nightly vLLM image - not a stable release
 - Uncalibrated FP8 KV cache scaling factors
 - Current software stack lacks native FP4 MoE compute kernels for GB10 (SM121), forcing Marlin dequantization fallback
 - Single node only (dual-Spark would enable true 1M context)
@@ -211,7 +216,7 @@ See [METHODOLOGY.md](METHODOLOGY.md) for full details on each limitation.
 ## Feedback Welcome
 
 If you reproduce these results, find errors in the methodology, or achieve higher
-numbers — please open an issue or PR. The goal is accurate community benchmarks,
+numbers - please open an issue or PR. The goal is accurate community benchmarks,
 not records.
 
 **Author:** Rajendra Rawat · May 2026
