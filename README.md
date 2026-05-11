@@ -21,7 +21,7 @@ wanted to understand why mine was different. They're a side effect, not the goal
 I came across a reddit thread that claimed ["There's not a SINGLE local LLM which can solve this logic puzzle"](https://www.reddit.com/r/LocalLLaMA/comments/1mblq5g/theres_not_a_single_local_llm_which_can_solve/) -
 only o3 could do it at the time of posting.
 
-Cogni-Brain solved it locally in under 5 minutes via Open WebUI.
+Cogni-Brain solved it locally in 3 minutes.
 
 <p align="center">
   <img src="./assets/openwebui_logic_puzzle.png" width="600" alt="Logic Puzzle Solution">
