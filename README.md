@@ -63,7 +63,33 @@ analyzing the vLLM codebase - on the same Spark it is running on.
 
 ## Benchmark Results
 
-> NemoHermes agent and Open WebUI were **running alongside** during all benchmark runs.
+### Official spark-arena Submission
+
+> Benchmarked using [llama-benchy](https://github.com/eugr/llama-benchy) with the standardised spark-arena methodology.
+> NemoHermes and Open WebUI containers were stopped during this run. Only spark-brain (vLLM) running.
+
+| Metric | Result |
+|---|---|
+| Single session TPS (tg128) | **23.45 tok/s** |
+| Peak TPS (tg128 c5) | **72.67 tok/s** |
+| Context stability | **Stable 0 → 100K tokens** |
+| Total benchmark tests | 104 |
+| Total benchmark duration | **5h 49m** |
+| Crashes / OOM errors | **0** |
+| KV cache dtype | FP8 |
+| Quantization | NVFP4 (Marlin weight-only) |
+| Swap during benchmark | 0 bytes |
+
+View full benchmark: [spark-arena.com/benchmark/sub1778644062716](https://spark-arena.com/benchmark/sub1778644062716)
+
+<p align="center">
+  <img src="./assets/spark_arena_leaderboard.png" width="800" alt="spark-arena leaderboard - May 14, 2026">
+  <br><i>spark-arena community leaderboard — Single Node, NVFP4, vLLM, concurrency 1 — May 14, 2026</i>
+</p>
+
+### Early Benchmark (Custom Script, Production Stack Running)
+
+> These results were measured with the custom `benchmark_spark.py` script with NemoHermes and Open WebUI running alongside.
 > TPS includes both reasoning (`<think>`) and answer tokens. Isolated TPS would be higher.
 
 | Metric | Result |
@@ -74,10 +100,6 @@ analyzing the vLLM codebase - on the same Spark it is running on.
 | 3 concurrent sessions (total) | **41.7 tok/s** |
 | Max context window | **130,753 tokens** |
 | TTFT (average) | **212ms** |
-| KV cache dtype | FP8 |
-| Quantization | NVFP4 (Marlin weight-only) |
-| GPU memory utilization | 0.75 |
-| Swap during benchmark | 0 bytes |
 
 <p align="center">
   <img src="./assets/benchmark_test_1-3.png" width="600" alt="Benchmark Test 1-3">
@@ -91,12 +113,8 @@ analyzing the vLLM codebase - on the same Spark it is running on.
 
 ## Compared to Prior Published Results
 
-> NemoHermes agent and Open WebUI were **running alongside** during all benchmark runs.
-> TPS includes both reasoning (`<think>`) and answer tokens. Isolated TPS would be higher.
->
 > **Methodology note:** The [spark-arena leaderboard](https://spark-arena.com/leaderboard) uses a standardised `tg128` test
-> (128 fixed output tokens, no production services). This benchmark used 300 output tokens
-> with NemoHermes and Open WebUI running alongside. Methodologies are not directly comparable.
+> (128 fixed output tokens, no production services). The official submission run used this methodology.
 >
 > **Model note:** This benchmark is specific to **Nemotron-3-Super-120B-A12B-NVFP4** - a reasoning-optimised MoE model.
 > Other 120B models (e.g. gpt-oss-120b) use different architectures optimised for throughput rather than deep reasoning
@@ -104,8 +122,9 @@ analyzing the vLLM codebase - on the same Spark it is running on.
 
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
-| **Cogni-Brain (airawatraj)** | **23.2** | NVFP4 + vLLM | 131K | 1 | NemoHermes + Open WebUI |
-| **Cogni-Brain (airawatraj)** | **55.3** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
+| **Cogni-Brain (airawatraj) — official** | **23.45** | NVFP4 + vLLM | 131K | 1 | none (spark-arena standard) |
+| **Cogni-Brain (airawatraj) — with stack** | **23.2** | NVFP4 + vLLM | 131K | 1 | NemoHermes + Open WebUI |
+| **Cogni-Brain (airawatraj) — concurrent** | **55.3** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
 | Seth Hobson (spark-arena, tg128) | 21.66 | NVFP4 + vLLM | 131K | 1 | none |
 | Seth Hobson (spark-arena, tg128) | 53.55 | NVFP4 + vLLM | 131K | 5 | none |
 | Saiyam Pathak | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
@@ -113,17 +132,10 @@ analyzing the vLLM codebase - on the same Spark it is running on.
 | Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none |
 | josephbreda | 16–17 | NVFP4 + vLLM | unknown | 1 | none |
 
-The highest single-node single-session result for Nemotron-3-Super-120B in the
-[spark-arena community leaderboard](https://spark-arena.com/leaderboard) as of May 9, 2026
-is 21.66 TPS (tg128, vLLM, NVFP4, Single Node, no production services).
-This setup measured 23.2 TPS with NemoHermes and Open WebUI running alongside -
-isolated TPS would be higher. Measured with exact `completion_tokens` from vLLM's
-streaming usage API. Happy to be proved wrong - let's extract max juice out of Spark.
-
-<p align="center">
-  <img src="./assets/spark_arena_leaderboard.png" width="800" alt="spark-arena community leaderboard - Single Node NVFP4 vLLM results as of May 9 2026">
-  <br><i>spark-arena community leaderboard - Single Node, NVFP4, vLLM, concurrency 1 - May 9, 2026</i>
-</p>
+The official spark-arena submission achieved **23.45 TPS** (tg128, vLLM, NVFP4, Single Node, no production services) —
+the highest single-node result published for Nemotron-3-Super-120B-A12B-NVFP4 as of May 14, 2026.
+TPS remains stable from 0 to 100,000 tokens of context with no performance cliff observed.
+Happy to be proved wrong - let's extract max juice out of Spark.
 
 ---
 

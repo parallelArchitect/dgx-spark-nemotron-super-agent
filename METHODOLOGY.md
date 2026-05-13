@@ -1,6 +1,6 @@
 # METHODOLOGY.md
 ## DGX Spark · Nemotron-3-Super-120B · Single-Node Benchmark
-**Author:** Rajendra Singh Rawat (`airawatraj`) · **Date:** May 9, 2026
+**Author:** Rajendra Singh Rawat (`airawatraj`) · **Updated:** May 14, 2026
 
 ---
 
@@ -19,8 +19,9 @@
 | vLLM version | `0.19.2rc1.dev134+gfe9c3d6c5` |
 | Model checkpoint | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4` (`rl-030326-nvfp4`) |
 | Reasoning parser | `super_v3_reasoning_parser.py` (official NVIDIA HuggingFace release) |
+| Benchmark tool | [llama-benchy](https://github.com/eugr/llama-benchy) v0.3.8.dev2+gff162bcfc |
 | Agent Runtime | `NemoHermes` (Proved vastly more stable for real workflows than NemoClaw/OpenClaw) |
-| Open WebUI | Running alongside during all benchmark runs |
+| Open WebUI | Stopped during official benchmark run |
 | OS | Ubuntu 24.04 (DGX OS) |
 
 ### Final vLLM Launch Command
@@ -59,6 +60,22 @@ docker run -d --name spark-brain --gpus all \
     --tool-call-parser qwen3_coder
 ```
 
+### Official spark-arena Benchmark Command
+```bash
+llama-benchy --base-url http://localhost:8000/v1 \
+  --model "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4" \
+  --tokenizer "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4" \
+  --depth 0 4096 8192 16384 32768 65535 100000 \
+  --pp 2048 \
+  --tg 128 \
+  --enable-prefix-caching \
+  --concurrency 1 2 5 10 \
+  --save-result results_full.csv
+```
+
+> **Production services during official run:** NemoHermes and Open WebUI containers were stopped.
+> Only spark-brain (vLLM) was running. This matches the spark-arena standard methodology.
+
 ---
 
 ## Key Configuration Decisions & War Stories
@@ -66,11 +83,11 @@ docker run -d --name spark-brain --gpus all \
 Getting 120B parameters running natively on a 128GB unified memory system required fighting through several undocumented roadblocks. Here is why the configuration above looks the way it does.
 
 ### Why raw vLLM instead of the standard NVIDIA NIM Wrapper?
-If you attempt to use the standard NIM container, the process will fatally crash during weight loading. The GB10 chip utilizes a Unified Memory Architecture (UMA). The NIM wrapper has a hardcoded "safety guard" that forcibly clamps `gpu_memory_utilization` from your requested 0.90 down to 0.50 to prevent kernel panics. 
+If you attempt to use the standard NIM container, the process will fatally crash during weight loading. The GB10 chip utilizes a Unified Memory Architecture (UMA). The NIM wrapper has a hardcoded "safety guard" that forcibly clamps `gpu_memory_utilization` from your requested 0.90 down to 0.50 to prevent kernel panics.
 Because 50% of 128GB is ~60.8GB, and the NVFP4 model requires ~75GB just for weights, the NIM wrapper creates a synthetic OOM error and dies immediately. Deploying the raw `vllm-openai` image acts as a "nuclear override" to bypass this wrapper and allow 0.75 utilization.
 
 ### The Tool Parser Booby-Trap (`--tool-call-parser qwen3_coder`)
-Early runs using the default `hermes` parser or standard OpenAI tool flags crashed the vLLM server entirely. Inspecting the logs revealed a hardcoded stub inside the NVIDIA vLLM fork (`error=Not being used, manual parsing in serving_chat.py`). 
+Early runs using the default `hermes` parser or standard OpenAI tool flags crashed the vLLM server entirely. Inspecting the logs revealed a hardcoded stub inside the NVIDIA vLLM fork (`error=Not being used, manual parsing in serving_chat.py`).
 I was caught in a Catch-22: passing no flags resulted in 400 errors from the agent rejecting the payload; passing standard tool flags hit the broken internal parser and triggered a 500 server crash. The golden compromise was passing `--enable-auto-tool-choice` to open the API door, combined with `--tool-call-parser qwen3_coder` to seamlessly route the tool calls to the agent without tripping the buggy internal chat serving code.
 
 ### Why `--gpu-memory-utilization 0.75`
@@ -87,7 +104,7 @@ Setting this to match the context length (131072) caused a CUDA OOM during MoE w
 ### Why not 1M Context? & Why Swap is Disabled?
 I tested pushing the context window to the heavily marketed 1M-token limit. It actually worked beautifully — the engine burst past **38+ TPS**. But in real-world usage, it resulted in a complete system crash. I **value stability over benchmark rankings**, so I scaled it back to a stable 24 TPS at 65K. NemoClaw/NemoHermes started complaining, though, so I eventually found 131K to be the sweet spot.
 
-The math is unforgiving: for a 120B model, the KV cache footprint for 1M tokens vastly exceeds the ~26 GB of available unified memory headroom on a single Spark. Once the memory filled, the OS aggressively began swapping tensors to the local NVMe SSD. The PCIe bandwidth choke starved the GPU, causing vLLM to hang and eventually crashing the system. 
+The math is unforgiving: for a 120B model, the KV cache footprint for 1M tokens vastly exceeds the ~26 GB of available unified memory headroom on a single Spark. Once the memory filled, the OS aggressively began swapping tensors to the local NVMe SSD. The PCIe bandwidth choke starved the GPU, causing vLLM to hang and eventually crashing the system.
 
 This is exactly why OS swap must be permanently disabled (`sudo swapoff -a`) in this setup, and why the context is strictly capped at 131K for single-node stability. True 1M context for this model requires a dual-Spark configuration.
 
@@ -104,9 +121,40 @@ NVFP4 provides **memory compression benefits** (model fits in 128 GB unified mem
 
 ## Benchmark Results
 
-All results use exact `completion_tokens` from vLLM's streaming usage API to calculate true decode throughput (including generated `<think>` tokens).
+### Official spark-arena Submission (May 14, 2026)
 
-### Single Session TPS
+Benchmarked using [llama-benchy](https://github.com/eugr/llama-benchy) with the standardised spark-arena methodology.
+NemoHermes and Open WebUI containers were stopped. Only spark-brain (vLLM) running.
+
+| Test | TPS (total) | TTFT |
+|---|---|---|
+| tg128 (c1) | **23.45** | — |
+| tg128 (c2) | 35.10 | — |
+| tg128 (c5) | 37.78 | — |
+| tg128 (c10) | 37.95 | — |
+| pp2048 (c1) | 1646.62 | 1247ms |
+| tg128 @ d100000 (c1) | **22.40** | — |
+
+Full results: [spark-arena.com/benchmark/sub1778644062716](https://spark-arena.com/benchmark/sub1778644062716)
+
+### Context Window Stability
+
+TPS remains stable at 22–23.45 tokens/s from depth 0 to depth 100,000. No performance cliff observed across the full benchmark sweep.
+
+| Depth | tg128 t/s (c1) |
+|---|---|
+| 0 | 23.45 |
+| 4096 | 21.95 |
+| 8192 | 22.30 |
+| 16384 | 21.94 |
+| 32768 | 22.96 |
+| 65535 | 23.25 |
+| 100000 | **22.40** |
+
+### Early Benchmark (Custom Script, Production Stack Running)
+
+These results were measured with the custom `benchmark_spark.py` script with NemoHermes and Open WebUI running alongside.
+All results use exact `completion_tokens` from vLLM's streaming usage API.
 
 | Run | TTFT | TPS | Output tokens |
 |---|---|---|---|
@@ -115,7 +163,7 @@ All results use exact `completion_tokens` from vLLM's streaming usage API to cal
 | 3 | 212ms | 22.6 | 300 |
 | **Average** | **212ms** | **23.2** | |
 
-### Concurrent Sessions
+### Concurrent Sessions (Custom Script)
 
 | Sessions | Total TPS | Per-session TPS |
 |---|---|---|
@@ -124,23 +172,19 @@ All results use exact `completion_tokens` from vLLM's streaming usage API to cal
 | 3 | 41.7 | 13.9 |
 | 4 | 55.3 | 13.8 |
 
-4-session total TPS of 55.3 demonstrates strong batching efficiency on GB10.
-
-### Context Window
-
-TPS remains stable at 23+ tokens/s across the full 131K context window. No performance cliff observed.
-
 ---
 
 ## Known Limitations & Operational Hazards
 
 **Mamba-2 NVFP4 Kernel Sync Errors:** While basic requests scale to 4 concurrent sessions nicely, hitting the engine simultaneously with highly complex, back-to-back reasoning prompts can trigger `torch.AcceleratorError: CUDA error: an illegal instruction was encountered` in `mamba_mixer2.py`. The bleeding-edge Blackwell Tensor Cores occasionally trip over themselves interleaving math for massive parallel thoughts. For deep autonomous agent work, limiting concurrency provides essential stability.
 
-**Agent Sandboxing Network Friction:** Heavy agentic frameworks operating inside privileged sandboxes (like K3s/OpenShell) can choke during massive file write operations. I frequently encountered `Unexpected Error: tailscale: dial timeout` and mid-stream proxy timeouts until I hardcoded the OpenShell gateway timeout to 600 seconds (`openshell inference set --timeout 600`). 
+**Agent Sandboxing Network Friction:** Heavy agentic frameworks operating inside privileged sandboxes (like K3s/OpenShell) can choke during massive file write operations. I frequently encountered `Unexpected Error: tailscale: dial timeout` and mid-stream proxy timeouts until I hardcoded the OpenShell gateway timeout to 600 seconds (`openshell inference set --timeout 600`).
 
 **Context Loops (NemoClaw):** During early testing, NemoClaw occasionally fell into severe repetitive loops (e.g., printing `HEARTBEAT_OK` until it hit the maximum token limit), dropping the memory write thread lock and crashing the agent. Switching the active agent stack to `NemoHermes` proved drastically more stable for overnight, unattended app building.
 
 **Uncalibrated FP8 KV cache scaling.** vLLM logs confirm `Using KV cache scaling factor 1.0` (uncalibrated). This may cause subtle accuracy degradation on very long contexts compared to properly calibrated future releases.
+
+**Stable image incompatibility.** vLLM v0.20.0-aarch64-cu130-ubuntu2404 rejects local absolute model paths due to a stricter HuggingFace validator. The nightly image (sha256:3dbe092e) is required for this setup.
 
 ---
 
@@ -148,17 +192,17 @@ TPS remains stable at 23+ tokens/s across the full 131K context window. No perfo
 
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
-| **Cogni-Brain (airawatraj)** | **23.2** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
+| **Cogni-Brain (airawatraj) — official** | **23.45** | NVFP4 + vLLM | 131K | 1 | none |
+| **Cogni-Brain (airawatraj) — with stack** | **23.2** | NVFP4 + vLLM | 131K | 1 | NemoHermes + Open WebUI |
 | Seth Hobson (spark-arena, tg128) | 21.66 | NVFP4 + vLLM | 131K | 1 | none |
 | Saiyam Pathak | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
 | Avarok | 19 | NVFP4 + vLLM | unknown | 1 | none |
 | Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none |
 | josephbreda | 16–17 | NVFP4 + vLLM | unknown | 1 | none |
 
-> **Note:** spark-arena tg128 results use 128 fixed output tokens with no
-> production services. This benchmark used 300 output tokens with NemoHermes
-> and Open WebUI running alongside. See [README.md](README.md) for full
-> community comparison including concurrent session results.
+> **Note:** spark-arena tg128 results use 128 fixed output tokens with no production services.
+> The official submission matches this methodology exactly.
+> See [README.md](README.md) for full community comparison including concurrent session results.
 
 *If you reproduce these results or find errors in this methodology, please
 open an issue or pull request. The goal is accurate, reproducible community
