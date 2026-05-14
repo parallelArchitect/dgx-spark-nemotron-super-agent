@@ -120,16 +120,16 @@ View full benchmark: [spark-arena.com/benchmark/sub1778644062716](https://spark-
 > Other 120B models (e.g. gpt-oss-120b) use different architectures optimised for throughput rather than deep reasoning
 > and are not directly comparable for agentic workloads.
 
+
 | Who | TPS | Stack | Context | Concurrent | Production services |
 |---|---|---|---|---|---|
-| **Cogni-Brain (airawatraj) — official** | **23.45** | NVFP4 + vLLM | 131K | 1 | none (spark-arena standard) |
+| **[Cogni-Brain (airawatraj)](https://spark-arena.com/benchmark/sub1778644062716) — official** | **23.45** | NVFP4 + vLLM | 131K | 1 | none (spark-arena standard) |
 | **Cogni-Brain (airawatraj) — with stack** | **23.2** | NVFP4 + vLLM | 131K | 1 | NemoHermes + Open WebUI |
 | **Cogni-Brain (airawatraj) — concurrent** | **55.3** | NVFP4 + vLLM | 131K | 4 | NemoHermes + Open WebUI |
-| Seth Hobson (spark-arena, tg128) | 21.66 | NVFP4 + vLLM | 131K | 1 | none |
-| Seth Hobson (spark-arena, tg128) | 53.55 | NVFP4 + vLLM | 131K | 5 | none |
-| Saiyam Pathak | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
-| Avarok | 19 | NVFP4 + vLLM | unknown | 1 | none |
-| Eugr | 16.55 | NVFP4 + vLLM | 256K | unknown | none |
+| [Seth Hobson](https://spark-arena.com/benchmark/a3dd9b9f-d9a6-485b-af72-fd34150a8b7c) (spark-arena, tg128) | 21.66 | NVFP4 + vLLM | 131K | 1 | none |
+| [Seth Hobson](https://spark-arena.com/benchmark/a3dd9b9f-d9a6-485b-af72-fd34150a8b7c) (spark-arena, tg128) | 53.55 | NVFP4 + vLLM | 131K | 5 | none |
+| [Saiyam Pathak](https://saiyampathak.medium.com/heres-what-i-learned-about-nemotron-3-super-i-ran-a-120b-parameter-model-on-nvidia-dgx-spark-fc5b3be12ae1) | 19.5 | Q4_K_M GGUF + llama.cpp | 262K | 1 | none |
+| [Raphael Amorim](https://spark-arena.com/benchmark/55beae02-e7a5-4e8a-98d3-325ba86b4583) | 16.55 | NVFP4 + vLLM | 262K | unknown | none |
 | josephbreda | 16–17 | NVFP4 + vLLM | unknown | 1 | none |
 
 The official spark-arena submission achieved **23.45 TPS** (tg128, vLLM, NVFP4, Single Node, no production services) —
